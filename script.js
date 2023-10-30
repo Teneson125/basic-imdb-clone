@@ -2,28 +2,46 @@ const imageNotAvailable = "public/assert/images/image-not-available.png";
 let favoriteMovies = [];
 const apiKey = "da538c04";
 
+// Retrieve the list of favorite movies from local storage
+const storedFavoriteMovies = JSON.parse(localStorage.getItem("favoriteMovies"));
+if (Array.isArray(storedFavoriteMovies)) {
+  favoriteMovies = storedFavoriteMovies;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("searchInput");
-  searchInput.addEventListener("input", async function () {
-    //getting the input from the user.
-    const data = await fetch(
-      `https://www.omdbapi.com/?s=${searchInput.value}&page=1&apikey=${apiKey}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.Search) {
-          console.log(data.Search);
-          displayMovie(data.Search);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  });
+  if (searchInput) {
+    searchInput.addEventListener("input", async function () {
+      //getting the input from the user.
+      const data = await fetch(
+        `https://www.omdbapi.com/?s=${searchInput.value}&page=1&apikey=${apiKey}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.Search) {
+            displayMovie(data.Search);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    });
+  }
+
+  const favoriteMovieList = document.getElementById("favoriteMovieList");
+  if (favoriteMovieList) {
+    // Retrieve the list of favorite movies from local storage
+    const favoriteMovies = JSON.parse(localStorage.getItem("favoriteMovies"));
+    if (Array.isArray(favoriteMovies) && favoriteMovies.length > 0) {
+      // displayFavoriteMovies(favoriteMovies);
+      window.alert(favoriteMovies.length);
+    } else {
+      favoriteMovieList.innerHTML = "<p>No favorite movies added yet.</p>";
+    }
+  }
 });
 
 async function displayMovie(movies) {
-  console.log("movies");
   const movieList = document.getElementById("movieList");
   movieList.innerHTML = ""; // Clear previous results
 
@@ -44,7 +62,7 @@ async function displayMovie(movies) {
       image = imageNotAvailable;
     }
 
-    const content = isFavorite(movie)
+    const icon = isFavorite(movie.imdbID)
       ? '<i class="fas fa-heart"></i>'
       : '<i class="far fa-heart"></i>';
 
@@ -53,7 +71,7 @@ async function displayMovie(movies) {
       <div class="flex justify-between">
         <h2 class="font-bold text-xl">${movie.Title}</h2>
         <div class="mt-[6px] text-red-500 cursor-pointer" onclick="toggleFavorite('${movie.imdbID}')">
-           ${content}
+           ${icon}
         </div>
       </div>
       <div class="flex flex-row justify-between">
@@ -71,12 +89,28 @@ async function toggleFavorite(imdbID) {
 
   if (movie) {
     removeFromFavorites(movie);
+    const movieItem = document.getElementById(imdbID);
+    if (movieItem) {
+      const icon = '<i class="far fa-heart"></i>';
+      const iconContainer = movieItem.querySelector(".text-red-500");
+      if (iconContainer) {
+        iconContainer.innerHTML = icon;
+      }
+    }
   } else {
     fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=${apiKey}`)
       .then((res) => res.json())
       .then((movieDetails) => {
         if (movieDetails && movieDetails.Response === "True") {
           addToFavorites(movieDetails);
+          const movieItem = document.getElementById(imdbID);
+          if (movieItem) {
+            const icon = '<i class="fas fa-heart"></i>';
+            const iconContainer = movieItem.querySelector(".text-red-500");
+            if (iconContainer) {
+              iconContainer.innerHTML = icon;
+            }
+          }
         } else {
           console.error("Movie not found");
         }
@@ -102,6 +136,6 @@ function removeFromFavorites(movie) {
 }
 
 // Function to check if a movie is already in favorites
-function isFavorite(movie) {
-  return favoriteMovies.some((m) => m.imdbID === movie.imdbID);
+function isFavorite(imdbID) {
+  return favoriteMovies.some((m) => m.imdbID === imdbID);
 }
