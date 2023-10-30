@@ -33,13 +33,53 @@ document.addEventListener("DOMContentLoaded", function () {
     // Retrieve the list of favorite movies from local storage
     const favoriteMovies = JSON.parse(localStorage.getItem("favoriteMovies"));
     if (Array.isArray(favoriteMovies) && favoriteMovies.length > 0) {
-      // displayFavoriteMovies(favoriteMovies);
-      window.alert(favoriteMovies.length);
+      displayFavoriteMovies(favoriteMovies);
     } else {
       favoriteMovieList.innerHTML = "<p>No favorite movies added yet.</p>";
     }
   }
 });
+
+async function displayFavoriteMovies(favoriteMovies) {
+  const favoriteMovieList = document.getElementById("favoriteMovieList");
+  favoriteMovies.forEach(async (movie) => {
+    const isFavoriteIcon = await isFavorite(movie.imdbID);
+    const movieItem = document.createElement("div");
+    movieItem.classList.add(
+      "flex",
+      "flex-col",
+      "gap-5",
+      "p-[10px]",
+      "bg-white"
+    );
+    movieItem.id = movie.imdbID;
+    var image = "";
+    if (movie.Poster !== "N/A") {
+      image = movie.Poster;
+    } else {
+      image = imageNotAvailable;
+    }
+
+    const icon = isFavoriteIcon
+      ? '<i class="fas fa-heart"></i>'
+      : '<i class="far fa-heart"></i>';
+
+    movieItem.innerHTML = `
+          <img src="${image}" alt="${movie.Title} Poster">
+          <div class="flex justify-between">
+            <h2 class="font-bold text-xl">${movie.Title}</h2>
+            <div class="mt-[6px] text-red-500 cursor-pointer" onclick="toggleFavorite('${movie.imdbID}')">
+               ${icon}
+            </div>
+          </div>
+          <div class="flex flex-row justify-between">
+            <p>${movie.Year}</p>
+            <p>Type: ${movie.Type}</p>
+          </div>
+        `;
+    favoriteMovieList.appendChild(movieItem);
+  });
+}
 
 async function displayMovie(movies) {
   const movieList = document.getElementById("movieList");
