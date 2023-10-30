@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basic IMDB Clone - Favourite Movies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="script.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            backgroundImage: {
+              "theater-background": "url('public/assert/images/Theater3.jpg')",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-[#e4e4e4]">
+    <div class="bg-black">
+      <div
+        class="w-[100vw] h-[140px] sm:h-[200px] bg-theater-background opacity-50 bg-cover bg-center"
+      ></div>
+    </div>
+    <div
+      class="absolute top-[calc(140px-18px)] sm:top-[calc(200px-22px)] left-[50%] transform -translate-x-1/2"
+    >
+      <div class="absolute top-[-50px] right-0">
+        <a href="/index.html" class="font-bold text-xl text-white"
+          >Back to Home</a
+        >
+      </div>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 w-[300px] sm:w-[calc(100vw-200px)] py-[6px] sm:py-[10px] px-[10px] rounded-md bg-white"
+      >
+        <!--TODO content will come here -->
+      </div>
+    </div>
+  </body>
+</html>
