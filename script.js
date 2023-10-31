@@ -43,7 +43,118 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
     }
   }
+
+  const movieDetails = document.getElementById("movieDetails");
+  if (movieDetails) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+    getMovieDetails(id);
+  }
 });
+
+async function getMovieDetails(id) {
+  fetch(`https://www.omdbapi.com/?i=${id}&apikey=${apiKey}`)
+    .then((res) => res.json())
+    .then((data) => displayMovieDetails(data))
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+}
+
+async function displayMovieDetails(data) {
+  const isFavoriteIcon = await isFavorite(data.imdbID);
+  const movieDetails = document.getElementById("movieDetails");
+  const movieDetailMessage = document.getElementById("movieDetailMessage");
+
+  movieDetailMessage.innerHTML = `
+  <p class="flex flex-row gap-1">
+    <span>Showing result for</span>
+    <span class="font-bold">${data.Title}</span>
+  </p>
+  `;
+  var image = "";
+  if (data.Poster !== "N/A") {
+    image = data.Poster;
+  } else {
+    image = imageNotAvailable;
+  }
+
+  const icon = isFavoriteIcon
+    ? '<i class="fas fa-heart"></i>'
+    : '<i class="far fa-heart"></i>';
+
+  movieDetails.innerHTML = `
+    <div class="flex flex-col gap-3 w-full">
+      <div class="flex items-center justify-between">
+        <div class="flex gap-5">
+          <h1 class="font-bold text-3xl">${data.Title}</h1>
+        </div>
+        <div class="text-red-500 cursor-pointer" onclick="toggleFavorite('${
+          data.imdbID
+        }')">
+          ${icon}
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex gap-5">
+          <p>${data.Year}</p>        
+          <p>${data.Runtime}</p>
+        </div>
+        <div class="flex">
+          <div class="flex gap-1">
+            <p>Rating:</p>
+            <p>${data.imdbRating}/10</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row gap-10">
+        <img src="${image}" alt="${data.Title} Poster">
+        <div class="flex justify-between flex-col gap-5">
+          <div class="flex flex-col gap-5">
+          <div class="flex flex-row gap-3">
+          ${data.Genre.split(",")
+            .map((genre, index) => {
+              const trimmedGenre = genre.trim();
+              if (trimmedGenre) {
+                return `
+                <div key="${index}" class="flex justify-center items-center px-[16px] py-[4px] rounded-[30px] bg-white text-black">
+                  ${trimmedGenre}
+                </div>
+              `;
+              }
+              return "";
+            })
+            .join("")}
+          </div>
+        
+            <p>${data.Plot}</p>
+          </div>
+          <div class="flex flex-col gap-5">
+            <p class="flex gap-1">
+              <span class="font-bold">Director:</span>
+              <span>${data.Director}</span>
+            </p>
+            <p class="flex gap-1">
+              <span class="font-bold">Writer:</span>
+              <span>${data.Writer}</span>
+            </p>
+            <p class="flex gap-1">
+              <span class="font-bold">Released:</span>
+              <span>${data.Released}</span>
+            </p>
+            <p class="flex gap-1">
+              <span class="font-bold">Type:</span>
+              <span>${data.Type}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+  `;
+  console.log(data);
+}
 
 async function displayFavoriteMovies(favoriteMovies) {
   const favoriteMovieList = document.getElementById("favoriteMovieList");
@@ -92,7 +203,6 @@ async function displayFavoriteMovies(favoriteMovies) {
     favoriteMovieList.appendChild(movieItem);
   });
 }
-async function getMovieDetails() {}
 
 async function displayMovie(movies) {
   const movieList = document.getElementById("movieList");
