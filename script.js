@@ -63,7 +63,19 @@ function changeInputValue(input) {
   const searchInput = document.getElementById("searchInput");
   if (searchInput) {
     searchInput.value = input;
+
+    fetch(`https://www.omdbapi.com/?s=${input}&page=1&apikey=${apiKey}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.Search) {
+          displayMovie(data.Search);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }
+
   document.getElementById("suggestionsList").innerHTML = "";
 }
 
@@ -241,6 +253,7 @@ async function displayFavoriteMovies(favoriteMovies) {
 }
 
 async function displayMovie(movies) {
+  console.log(2);
   const movieList = document.getElementById("movieList");
   movieList.innerHTML = ""; // Clear previous results
 
