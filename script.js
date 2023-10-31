@@ -19,12 +19,19 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((res) => res.json())
         .then((data) => {
           if (data && data.Search) {
+            updateSuggestionList(data);
             displayMovie(data.Search);
           }
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
+    });
+
+    searchInput.addEventListener("focusout", () => {
+      setTimeout(() => {
+        document.getElementById("suggestionsList").innerHTML = "";
+      }, 300);
     });
   }
 
@@ -52,6 +59,28 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+function changeInputValue(input) {
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.value = input;
+  }
+  document.getElementById("suggestionsList").innerHTML = "";
+}
+
+function updateSuggestionList(data) {
+  const suggestionsList = document.getElementById("suggestionsList");
+  suggestionsList.innerHTML = `
+          
+${data.Search.map((val, index) => {
+  return `
+    <div key="${index}">
+      <li class="p-[10px] hover:bg-[#d7d7d7]" onClick="changeInputValue('${val.Title}')">${val.Title}</li>
+    </div>
+  `;
+})}
+`;
+}
+
 async function getMovieDetails(id) {
   fetch(`https://www.omdbapi.com/?i=${id}&apikey=${apiKey}`)
     .then((res) => res.json())
@@ -72,6 +101,8 @@ async function displayMovieDetails(data) {
     <span class="font-bold">${data.Title}</span>
   </p>
   `;
+
+  movieDetails.id = data.imdbID;
   var image = "";
   if (data.Poster !== "N/A") {
     image = data.Poster;
@@ -99,6 +130,7 @@ async function displayMovieDetails(data) {
         <div class="flex gap-5">
           <p>${data.Year}</p>        
           <p>${data.Runtime}</p>
+          <p>${data.Language}</p>
         </div>
         <div class="flex">
           <div class="flex gap-1">
@@ -137,6 +169,10 @@ async function displayMovieDetails(data) {
             <p class="flex gap-1">
               <span class="font-bold">Writer:</span>
               <span>${data.Writer}</span>
+            </p>
+            <p class="flex gap-1">
+              <span class="font-bold">Actors:</span>
+              <span>${data.Actors}</span>
             </p>
             <p class="flex gap-1">
               <span class="font-bold">Released:</span>
