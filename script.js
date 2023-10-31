@@ -30,18 +30,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const favoriteMovieList = document.getElementById("favoriteMovieList");
   if (favoriteMovieList) {
+    const favoriteMovieMessage = document.getElementById(
+      "favoriteMovieMessage"
+    );
     // Retrieve the list of favorite movies from local storage
     const favoriteMovies = JSON.parse(localStorage.getItem("favoriteMovies"));
     if (Array.isArray(favoriteMovies) && favoriteMovies.length > 0) {
       displayFavoriteMovies(favoriteMovies);
     } else {
-      favoriteMovieList.innerHTML = "<p>No favorite movies added yet.</p>";
+      favoriteMovieMessage.innerHTML = `
+      No favorite movies added yet.
+      `;
     }
   }
 });
 
 async function displayFavoriteMovies(favoriteMovies) {
   const favoriteMovieList = document.getElementById("favoriteMovieList");
+  const favoriteMovieMessage = document.getElementById("favoriteMovieMessage");
+  favoriteMovieList.innerHTML = "";
+  favoriteMovieMessage.innerHTML = `
+      There are ${favoriteMovies.length} favourite movies.
+      `;
   favoriteMovies.forEach(async (movie) => {
     const isFavoriteIcon = await isFavorite(movie.imdbID);
     const movieItem = document.createElement("div");
@@ -67,7 +77,9 @@ async function displayFavoriteMovies(favoriteMovies) {
     movieItem.innerHTML = `
           <img src="${image}" alt="${movie.Title} Poster">
           <div class="flex justify-between">
-            <h2 class="font-bold text-xl">${movie.Title}</h2>
+            <a href="/movie.html?id=${movie.imdbID}" >
+              <h2 class="font-bold text-xl">${movie.Title}</h2>
+            </a>
             <div class="mt-[6px] text-red-500 cursor-pointer" onclick="toggleFavorite('${movie.imdbID}')">
                ${icon}
             </div>
@@ -80,6 +92,7 @@ async function displayFavoriteMovies(favoriteMovies) {
     favoriteMovieList.appendChild(movieItem);
   });
 }
+async function getMovieDetails() {}
 
 async function displayMovie(movies) {
   const movieList = document.getElementById("movieList");
@@ -109,7 +122,9 @@ async function displayMovie(movies) {
     movieItem.innerHTML = `
       <img src="${image}" alt="${movie.Title} Poster">
       <div class="flex justify-between">
-        <h2 class="font-bold text-xl">${movie.Title}</h2>
+        <a href="/movie.html?id=${movie.imdbID}" >
+          <h2 class="font-bold text-xl">${movie.Title}</h2>
+        </a>
         <div class="mt-[6px] text-red-500 cursor-pointer" onclick="toggleFavorite('${movie.imdbID}')">
            ${icon}
         </div>
@@ -129,6 +144,19 @@ async function toggleFavorite(imdbID) {
 
   if (movie) {
     removeFromFavorites(movie);
+    const favoriteMovieList = document.getElementById("favoriteMovieList");
+    if (favoriteMovieList) {
+      const storedFavoriteMovies = JSON.parse(
+        localStorage.getItem("favoriteMovies")
+      );
+      if (Array.isArray(storedFavoriteMovies)) {
+        favoriteMovies = storedFavoriteMovies;
+      }
+
+      displayFavoriteMovies(favoriteMovies);
+      return;
+    }
+
     const movieItem = document.getElementById(imdbID);
     if (movieItem) {
       const icon = '<i class="far fa-heart"></i>';
