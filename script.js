@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    //close the suggestionsList if we focusout from the search input
     searchInput.addEventListener("focusout", () => {
       setTimeout(() => {
         document.getElementById("suggestionsList").innerHTML = "";
@@ -59,11 +60,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+//update the input value from the suggestionsList
 function changeInputValue(input) {
   const searchInput = document.getElementById("searchInput");
   if (searchInput) {
     searchInput.value = input;
-
+    //update the home page for the new input
     fetch(`https://www.omdbapi.com/?s=${input}&page=1&apikey=${apiKey}`)
       .then((res) => res.json())
       .then((data) => {
@@ -79,6 +81,7 @@ function changeInputValue(input) {
   document.getElementById("suggestionsList").innerHTML = "";
 }
 
+//update the suggestionsList for each input
 function updateSuggestionList(data) {
   const suggestionsList = document.getElementById("suggestionsList");
   suggestionsList.innerHTML = `
@@ -93,7 +96,9 @@ ${data.Search.map((val, index) => {
 `;
 }
 
+//get the movie details and for the detailed movie page.
 async function getMovieDetails(id) {
+  //get the movie by the id
   fetch(`https://www.omdbapi.com/?i=${id}&apikey=${apiKey}`)
     .then((res) => res.json())
     .then((data) => displayMovieDetails(data))
@@ -102,6 +107,7 @@ async function getMovieDetails(id) {
     });
 }
 
+//This function is used to display the individual movie details.
 async function displayMovieDetails(data) {
   const isFavoriteIcon = await isFavorite(data.imdbID);
   const movieDetails = document.getElementById("movieDetails");
@@ -125,7 +131,7 @@ async function displayMovieDetails(data) {
   const icon = isFavoriteIcon
     ? '<i class="fas fa-heart"></i>'
     : '<i class="far fa-heart"></i>';
-
+  // add the movie details to the movie.html page by the id.
   movieDetails.innerHTML = `
     <div class="flex flex-col gap-3 w-full">
       <div class="flex items-center justify-between">
@@ -201,10 +207,10 @@ async function displayMovieDetails(data) {
     </div>
 
   `;
-  console.log(data);
 }
 
 async function displayFavoriteMovies(favoriteMovies) {
+  // Retrieve and display a list of favorite movies with poster, title, year, and a favorite icon.
   const favoriteMovieList = document.getElementById("favoriteMovieList");
   const favoriteMovieMessage = document.getElementById("favoriteMovieMessage");
   favoriteMovieList.innerHTML = "";
@@ -253,7 +259,7 @@ async function displayFavoriteMovies(favoriteMovies) {
 }
 
 async function displayMovie(movies) {
-  console.log(2);
+  // Display a list of movie search results with poster, title, year, and a favorite icon.
   const movieList = document.getElementById("movieList");
   movieList.innerHTML = ""; // Clear previous results
 
@@ -299,6 +305,7 @@ async function displayMovie(movies) {
 
 // Function to toggle a movie as a favorite or remove it from favorites
 async function toggleFavorite(imdbID) {
+  // Toggle a movie as a favorite or remove it from favorites, and update the UI accordingly.
   const movie = favoriteMovies.find((m) => m.imdbID === imdbID);
 
   if (movie) {
@@ -364,5 +371,6 @@ function removeFromFavorites(movie) {
 
 // Function to check if a movie is already in favorites
 function isFavorite(imdbID) {
+  // Check if a movie is in the list of favorite movies.
   return favoriteMovies.some((m) => m.imdbID === imdbID);
 }
