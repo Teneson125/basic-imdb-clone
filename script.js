@@ -236,7 +236,7 @@ async function displayFavoriteMovies(favoriteMovies) {
     movieItem.innerHTML = `
           <img src="${image}" alt="${movie.Title} Poster">
           <div class="flex justify-between">
-            <a href="/movie.html?id=${movie.imdbID}" >
+            <a href="movie.html?id=${movie.imdbID}" >
               <h2 class="font-bold text-xl">${movie.Title}</h2>
             </a>
             <div class="mt-[6px] text-red-500 cursor-pointer" onclick="toggleFavorite('${movie.imdbID}')">
@@ -281,7 +281,7 @@ async function displayMovie(movies) {
     movieItem.innerHTML = `
       <img src="${image}" alt="${movie.Title} Poster">
       <div class="flex justify-between">
-        <a href="/movie.html?id=${movie.imdbID}" >
+        <a href="movie.html?id=${movie.imdbID}" >
           <h2 class="font-bold text-xl">${movie.Title}</h2>
         </a>
         <div class="mt-[6px] text-red-500 cursor-pointer" onclick="toggleFavorite('${movie.imdbID}')">
